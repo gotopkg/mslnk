@@ -7,7 +7,6 @@ import (
 
 type stringdata map[string][]byte
 
-// TODO: test stringdata.Update()
 // check if proper flags are set on the header
 func (s *stringdata) Update(h *header) {
 	var hasString bool = false
