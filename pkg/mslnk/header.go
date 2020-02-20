@@ -50,6 +50,31 @@ func (h *header) Update() {
 	}
 }
 
+// writing flags from .Data bytes into header
+func (h *header) DecodeFlags() {
+	var byteIndex, bitIndex int8
+	byteIndex = -1
+	bitIndex = 8
+	for _, k := range LinkFlags {
+		if bitIndex >= 8 {
+			byteIndex += 1
+			bitIndex = 0
+		}
+		h.LinkFlags[k] = bool(h.Data.LinkFlags[byteIndex]&(1<<bitIndex) > 0)
+		bitIndex += 1
+	}
+	byteIndex = -1
+	bitIndex = 8
+	for _, k := range FileAttributesFlags {
+		if bitIndex >= 8 {
+			byteIndex += 1
+			bitIndex = 0
+		}
+		h.FileAttributes[k] = bool(h.Data.FileAttributes[byteIndex]&(1<<bitIndex) > 0)
+		bitIndex += 1
+	}
+}
+
 func (h *header) Bytes() []byte {
 	var buffer bytes.Buffer
 	binary.Write(&buffer, binary.LittleEndian, h.Data)

@@ -28,3 +28,38 @@ func TestHeader(t *testing.T) {
 		t.Errorf("Initialized header\n%v\ndoesn't match template\n%v\n", h.Bytes(), expected)
 	}
 }
+
+func TestHeader_DecodeFlags(t *testing.T) {
+	println("Testing Header DecodeFlags...")
+	h := mslnk.Header()
+	h.Data.LinkFlags = [4]byte{155, 0, 8, 0}
+	h.Data.FileAttributes = [4]byte{32, 0, 0, 0}
+	h.DecodeFlags()
+	// list of expected flags should be in order
+	expected := []string{"HasLinkTargetIDList", "HasLinkInfo", "HasRelativePath", "HasWorkingDir", "IsUnicode", "EnableTargetMetadata", "FILE_ATTRIBUTE_ARCHIVE", ""}
+	var i int = 0
+	for _, k := range mslnk.LinkFlags {
+		if h.LinkFlags[k] {
+			if expected[i] == k {
+				i += 1
+			} else {
+				t.Errorf("Flag %s set when it shouldn't be. Expecting %s first.\n", k, expected[i])
+			}
+		} else if expected[i] == k {
+			t.Errorf("Flag %s not set when it should be.", k)
+			i += 1
+		}
+	}
+	for _, k := range mslnk.FileAttributesFlags {
+		if h.FileAttributes[k] {
+			if expected[i] == k {
+				i += 1
+			} else {
+				t.Errorf("Flag %s set when it shouldn't be. Expecting %s first.\n", k, expected[i])
+			}
+		} else if expected[i] == k {
+			t.Errorf("Flag %s not set when it should be.", k)
+			i += 1
+		}
+	}
+}
