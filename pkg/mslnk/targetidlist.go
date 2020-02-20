@@ -15,7 +15,7 @@ func ItemIDFile(s string) ItemID {
 	r := ItemID{Data: make([]byte, len(s)+13)}
 	r.Size[0] = byte((len(r.Data) + 2) & 255)
 	if (len(r.Data) + 2) > 255 {
-		r.Size[1] = byte((len(r.Data) + 2) - 255)
+		r.Size[1] = byte((len(r.Data) + 2) >> 8)
 	}
 	r.Data[0] = ItemIDType["file"]
 	r.Data[10] = ItemIDMagic["file_attr"][0]
@@ -30,7 +30,7 @@ func ItemIDDirectory(s string) ItemID {
 	r := ItemID{Data: make([]byte, len(s)+13)}
 	r.Size[0] = byte((len(r.Data) + 2) & 255)
 	if (len(r.Data) + 2) > 255 {
-		r.Size[1] = byte((len(r.Data) + 2) - 255)
+		r.Size[1] = byte((len(r.Data) + 2) >> 8)
 	}
 	r.Data[0] = ItemIDType["directory"]
 	r.Data[10] = ItemIDMagic["directory_attr"][0]
@@ -56,7 +56,7 @@ func ItemIDCLSID(b []byte) ItemID {
 	r := make([]byte, len(b)+3)
 	r[0] = byte(len(r) & 255)
 	if len(r) > 255 {
-		r[1] = byte(len(r) - 255)
+		r[1] = byte(len(r) >> 8)
 	}
 	r[2] = ItemIDType["clsid"]
 	for i, v := range b {
@@ -83,7 +83,7 @@ func (x *LinkTargetIDList) Size() uint16 {
 	}
 	x.IDListSize[0] = byte(r & 255)
 	if r > 255 {
-		x.IDListSize[1] = byte(r - 255)
+		x.IDListSize[1] = byte(r >> 8)
 	} else {
 		x.IDListSize[1] = 0
 	}
