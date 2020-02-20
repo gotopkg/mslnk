@@ -5,32 +5,27 @@ import (
 	"encoding/binary"
 )
 
-type stringdata map[string][]byte
+type StringData map[string][]byte
 
 // check if proper flags are set on the header
-func (s *stringdata) Update(h *header) {
-	var hasString bool = false
-	if (*s)[StringData[0]] != nil { // name
+func (s *StringData) Update(h *header) {
+	if (*s)[StringDataOptions[0]] != nil { // name
 		h.LinkFlags["HasName"] = true
-		hasString = true
 	}
-	if (*s)[StringData[3]] != nil { // arguments
+	if (*s)[StringDataOptions[3]] != nil { // arguments
 		h.LinkFlags["HasArguments"] = true
-		hasString = true
 	}
 	for _, v := range []byte{1, 2, 4} {
-		if (*s)[StringData[v]] != nil {
-			h.LinkFlags["Has"+StringData[v]] = true
-			hasString = true
+		if (*s)[StringDataOptions[v]] != nil {
+			h.LinkFlags["Has"+StringDataOptions[v]] = true
 		}
 	}
-	h.LinkFlags["IsUnicode"] = hasString
 	h.Update()
 }
 
-func (s *stringdata) Bytes() []byte {
+func (s *StringData) Bytes() []byte {
 	var buffer bytes.Buffer
-	for _, k := range StringData {
+	for _, k := range StringDataOptions {
 		binary.Write(&buffer, binary.LittleEndian, (*s)[k])
 	}
 	return buffer.Bytes()
@@ -40,7 +35,7 @@ func StringDataStruct(s string) []byte {
 	r := make([]byte, len(s)+2)
 	r[0] = byte(len(s) & 255)
 	if len(s) > 255 {
-		r[1] = byte(len(s) - 255)
+		r[1] = byte(len(s) >> 8)
 	}
 	for i, v := range []byte(s) {
 		r[i+2] = v
@@ -48,7 +43,7 @@ func StringDataStruct(s string) []byte {
 	return r
 }
 
-var StringData = []string{
+var StringDataOptions = []string{
 	"NameString",
 	"RelativePath",
 	"WorkingDir",

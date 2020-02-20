@@ -9,7 +9,7 @@ type ShellLink struct {
 	ShellLinkHeader  header
 	LinkTargetIDList LinkTargetIDList
 	LinkInfo         LinkInfo
-	StringData       stringdata
+	StringData       StringData
 	ExtraData        []byte
 }
 
